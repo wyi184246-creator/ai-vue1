@@ -3,7 +3,7 @@
     <PageHead title="情绪日志" />
     <TableSearch :formitem="formitem" @search="handleSearch" />
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="userId" label="用户ID" width="80"/>
+      <el-table-column prop="userId" label="用户ID" width="80" />
       <el-table-column label="会话ID" width="80">
         <template #default="scope">
           <el-avatar>{{ scope.row.nickname }}</el-avatar>
@@ -32,7 +32,7 @@
       <el-table-column label="操作" width="240" fixed="right">
         <template #default="scope">
           <el-button  @click="viewSessionDetail(scope.row)" text type="primary" >详情</el-button>
-         <el-button  text type="danger" >删除</el-button>
+         <el-button @click="handleDelete(scope.row)" text type="danger" >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -127,16 +127,27 @@
              </div>
           </div>
           </div>
+          <div class="detail-section">
+            <h4>时间信息</h4>
+            <el-descriptions :column="2" border >
+            <el-descriptions-item label="创建时间">{{ currentDetail.createdAt}}</el-descriptions-item>
+              <el-descriptions-item label="更新时间">{{ currentDetail.updatedAt }}</el-descriptions-item>
+            </el-descriptions>
+          </div>
         </div>
+        <template #footer>
+          <el-button @click="detailDialogVisible=false">关闭</el-button>
+        </template>
         </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { getEmotionalPage } from '@/api/admin.js'
+import { getEmotionalPage, deleteEmotional } from '@/api/admin.js'
 import PageHead from '../components/PageHead.vue'
 import TableSearch from '@/components/TableSearch.vue'
 import { ref,onMounted,reactive } from 'vue'
+import { ElMessageBox } from 'element-plus'
 const getEmotionTagType = (emotion) => {
   const emotionTypes = {
     '快乐': 'success',
@@ -164,6 +175,7 @@ const getAiEmotionTagType = (emotion) => {
   }
   return emotionTagMap[emotion] || 'info'
 }
+
 
 const getEmotionScoreColor = (score) => {
   if (score >= 80) return '#f56c6c'
@@ -238,6 +250,20 @@ const viewSessionDetail=(row)=>{
   }
   detailDialogVisible.value=true
 }
+
+const handleDelete = (row) => {
+  ElMessageBox.confirm(`确定删除这条情绪日志吗？`,
+  '确认', {
+    confirmButtonText: '确定删除',
+    cancelButtonText: '取消',
+    type: 'danger'
+  }).then(() => {  
+    deleteEmotional(row.id).then(() => {
+      handleSearch()
+    })
+  })
+}
+
 
 onMounted(()=>{
   handleSearch()

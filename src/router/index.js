@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BackendLayout from '../components/BackendLayout.vue'
 import AuthLayout from '../components/AuthLayout.vue'
-import { pa } from 'element-plus/es/locale/index.mjs'
+import FrontendLayout from '../components/FrontendLayout.vue'
 const backendRoutes = [
   {
     path: '/back',
+    redirect: '/back/dashboard',
     component: BackendLayout,
     children: [
       {path: 'dashboard',
@@ -56,9 +57,61 @@ const backendRoutes = [
   }
 ]
 
+const frontendRoutes = [
+  {
+    path:'/',
+    component: FrontendLayout,
+    children:[{
+      path:'',
+      component: () => import('@/views/home.vue'),
+  
+    },
+    {
+      path:'consultation',
+      component: () => import('@/views/consultation.vue'),
+    },
+    {
+      path:'emotion-diary',
+      component: () => import('@/views/emotionDiary.vue'), 
+    },
+    {
+      path:'knowledge',
+      component: () => import('@/views/frontendknowledge.vue'),
+    }
+      
+    ]
+  }]
+
 const router = createRouter({
   history: createWebHistory(),
-  routes:backendRoutes
+  routes:[...frontendRoutes,...backendRoutes]
 })
+  
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+     if(userInfo.userType==2){
+      if(to.path.startsWith('/back')) {
+        next();
+      } else {
+        next('/back/dashboard');
+      }
+     } else if(userInfo.userType==1){
+     if(to.path.startsWith('/back')||to.path.startsWith('/auth')) 
+      {
+        next('/');
+      } else {
+        next();
+      
+     }
+  } }else {
+     if(to.path.startsWith('/back')) {
+      next('/auth/login');
+    } else {
+      next();
+    }
+  }
+});
 
 export default router

@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="flex-box">
       <el-button @click="headleCollapse"><el-icon><Expand/></el-icon></el-button>
-    <p class="page-title">导航</p>
+    <p class="page-title">{{ route.meta.title }}</p>
     </div>
     <div class="flex-box">
       <el-dropdown @command="handleCommand">
@@ -21,14 +21,29 @@
   </div>
 </template>
 <script setup>
-import { ArrowDown } from '@element-plus/icons-vue';
+import{ref} from 'vue';
 import { useAdminStore } from '../stores/admin';
-
+import{useRouter,useRoute} from 'vue-router';
+import { ElMessageBox } from 'element-plus';
+import { logout } from '../api/admin';
+import { lo } from 'element-plus/es/locale/index.mjs';
+const router=useRouter();
+const route=useRoute();
 
 const handleCommand = (command) => {
   if (command === 'logout') {
     // 处理退出登录逻辑
-    console.log('退出登录');
+   ElMessageBox.confirm('确定要退出登录吗？', '确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+     logout().then(() => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
+       router.push('/auth/login'); 
+    })
+    });
   }
 };
 const headleCollapse = () => {
