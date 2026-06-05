@@ -263,15 +263,15 @@ const handleDelete = (row) => {
     })
   })
 }
-
-
-onMounted(()=>{
-  handleSearch()
-})
 const handleChange = (page) => {
   pagination.currentPage = page;
   handleSearch();
 }
+
+onMounted(()=>{
+  handleSearch()
+})
+
 </script>
 
 <style lang="scss" scoped>
