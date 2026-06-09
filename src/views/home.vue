@@ -7,8 +7,8 @@
     </h2>
     <p class="description">每个深夜，每个焦虑的时刻，我们都在这里，不必独自承受，让心与心的连接温暖您的每一天</p>
     <div class="hero-actions">
-        <el-button size="large">开始倾诉，获得陪伴</el-button>
-        <el-button style="border-color: #fff;" size="large" color="transparent">记录心情，释放情感</el-button>
+        <el-button size="large" @click="aiConsultation">开始倾诉，获得陪伴</el-button>
+        <el-button @click="recordEmotion" style="border-color: #fff;" size="large" color="transparent">记录心情，释放情感</el-button>
     </div>
 </div>
 <div class="robot">
@@ -22,8 +22,16 @@
 
 
 <script setup>
-
+import { useRouter } from 'vue-router';
 const iconUrl = new URL('../assets/images/robot-fill.png', import.meta.url).href;
+const Router=useRouter()
+const  aiConsultation=()=>{
+     Router.push('/consultation')
+}
+const recordEmotion=()=>{
+    Router.push('/emotion-diary')
+}
+
 </script>
 <style lang="scss" scoped>
 

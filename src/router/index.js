@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import BackendLayout from '../components/BackendLayout.vue'
 import AuthLayout from '../components/AuthLayout.vue'
 import FrontendLayout from '../components/FrontendLayout.vue'
+import { useUserStore } from '../stores/user'
 const backendRoutes = [
   {
     path: '/back',
@@ -92,16 +93,15 @@ const router = createRouter({
 })
   
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-     if(userInfo.userType==2){
+  const userStore = useUserStore();
+  if (userStore.token) {
+     if(userStore.userType==2){
       if(to.path.startsWith('/back')) {
         next();
       } else {
         next('/back/dashboard');
       }
-     } else if(userInfo.userType==1){
+     } else if(userStore.userType==1){
      if(to.path.startsWith('/back')||to.path.startsWith('/auth')) 
       {
         next('/');

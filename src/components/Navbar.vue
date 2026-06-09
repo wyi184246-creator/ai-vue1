@@ -23,12 +23,14 @@
 <script setup>
 import{ref} from 'vue';
 import { useAdminStore } from '../stores/admin';
+import { useUserStore } from '../stores/user';
 import{useRouter,useRoute} from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import { logout } from '../api/admin';
 import { lo } from 'element-plus/es/locale/index.mjs';
 const router=useRouter();
 const route=useRoute();
+const userStore = useUserStore();
 
 const handleCommand = (command) => {
   if (command === 'logout') {
@@ -39,8 +41,7 @@ const handleCommand = (command) => {
       type: 'warning'
     }).then(() => {
      logout().then(() => {
-      localStorage.removeItem('token');
-      localStorage.removeItem('userInfo');
+      userStore.clearUser();
        router.push('/auth/login'); 
     })
     });

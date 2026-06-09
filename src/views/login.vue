@@ -35,8 +35,10 @@ import { ref, reactive } from 'vue';
 import { ElMessage } from 'element-plus';
 import { login } from '../api/admin';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/user';
 
 const router = useRouter();
+const userStore = useUserStore();
 const ruleFormRef = ref(null);
 const formData = reactive({
   username:'',
@@ -62,8 +64,7 @@ const submitForm = async () => {
     return;
   }
 
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('userInfo', JSON.stringify(data.userInfo));
+  userStore.setUser(data);
   if(data.userInfo.userType === 2) {
     router.push('/back/dashboard');
   } else {

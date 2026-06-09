@@ -189,12 +189,12 @@ import  MarkdownRenderer  from '../components/MarkdownRenderer.vue'
 import { ElMessage } from 'element-plus';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { ref, onMounted, nextTick, watch } from 'vue'
-
+import {useUserStore} from '../stores/user.js'
 
 const messages=ref([]);
 const userMessage=ref('');
-
-
+const useStore=useUserStore()
+const currentSession=ref(null);
 const createNewFrontendSession=()=>{
     const newSession={
         sessionId:`temp_${Date.now()}`,
@@ -203,9 +203,10 @@ const createNewFrontendSession=()=>{
 
     }
     currentSession.value=newSession;
+    messages.value=[]
 }
 
-const currentSession=ref(null);
+
 const sessionList=ref([])
 
 const iconUrl1 = new URL('../assets/images/robot-fill.png', import.meta.url).href;   
@@ -356,7 +357,7 @@ const startAIResponse=(sessionId,userMessage)=>{
         method:'POST',
         headers:{
             'Content-Type' : 'application/json',
-            'Token':localStorage.getItem('token'),
+            'Token':useStore.token,
             'Accept':'text/event-stream'
 
         },

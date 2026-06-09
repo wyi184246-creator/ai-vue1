@@ -29,22 +29,19 @@
     </div>
 </template>
 <script setup>
-import{ref ,onMounted} from 'vue';
 import { logout } from '../api/admin';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/user';
+import { storeToRefs } from 'pinia';
 const  iconUrl =new URL('../assets/images/机器人.png',import.meta.url).href;
 
-const isLoggedIn = ref(false);
+const userStore = useUserStore();
+const { isLoggedIn } = storeToRefs(userStore);
 
-onMounted(() => {
-  const token = localStorage.getItem('token');
-  isLoggedIn.value = !!token;
-});
 const router = useRouter();
 const handleLogout = () => {
   logout().then(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userInfo');
+    userStore.clearUser();
 
    router.push('/auth/login');
   })
