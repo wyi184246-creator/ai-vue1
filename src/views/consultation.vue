@@ -1,188 +1,266 @@
 <template>
-    <div class="consultation-container">
-     <div class="sidebar">
+  <div class="consultation-container">
+    <div class="sidebar">
       AI助手信息
+
       <div class="ai-assistant-info">
         <div class="breathing-circle">
-           <el-image :src="iconUrl1" alt="AI助手" style="width: 25px; height: 25px;" />
+          <el-image :src="iconUrl1" alt="AI助手" style="width: 25px; height: 25px;" />
         </div>
-       <h3 class="assistant-name">AI助手</h3>
-       <div class="online-status"> 
-        <div class="status-dot"></div>
-        在线服务中
-       </div>
+
+        <h3 class="assistant-name">AI助手</h3>
+
+        <div class="online-status">
+          <div class="status-dot"></div>
+          在线服务中
+        </div>
       </div>
+
       <!-- 情绪花园 -->
-     <div class="emotion-garden">
-       <div class="garden-header">
-        <div class="garden-title">
-            情绪花园
+      <div class="emotion-garden">
+        <div class="garden-header">
+          <div class="garden-title">情绪花园</div>
         </div>
-       </div>
-       <div class="emotion-info">
-         <div class="emotion-name"></div>
-         <div class="emotion-score"></div>
+
+        <div class="emotion-info">
+          <div class="emotion-name"></div>
+          <div class="emotion-score"></div>
         </div>
+
         <div class="warm-tips">
-            <div class="emotion-status-text">
-                <span class="status-label" > 今天感觉 </span>
-                <span class="status-emotion"> {{ currentEmotion.isNegative  ?"需要关注":"很不错" }} </span>
-            </div>
+          <div class="emotion-status-text">
+            <span class="status-label">今天感觉</span>
+            <span class="status-emotion">
+              {{ currentEmotion.isNegative ? "需要关注" : "很不错" }}
+            </span>
+          </div>
+
           <div class="emotion-intensity">
             <span class="intensity-dots">
-                <span v-for="dot in 3" :key="dot" class="dot" :class="{'active': getIntensityClass(currentEmotion.emotionScore)>=dot}"></span>
+              <span
+                v-for="dot in 3"
+                :key="dot"
+                class="dot"
+                :class="{ active: getIntensityClass(currentEmotion.emotionScore) >= dot }"
+              ></span>
             </span>
-            <span calss="intensity-text">
-                {{ getRiskText(currentEmotion.riskLevel) }}
+            <span class="intensity-text">
+              {{ getRiskText(currentEmotion.riskLevel) }}
             </span>
           </div>
-          <!-- 温习建议卡片 -->
-          <div class="warm-suggestion" >
-            <div class="suggestion-icon">💝</div>
-             <div class="suggestion-content">
-                <div class="suggestion-title">给你的小建议</div>
-                <div class="suggestion-text">{{ currentEmotion.suggestion }}</div>
-             </div>
-          </div>
-   <!-- 治愈行动 -->
-        <div class="healing-actions" v-if="currentEmotion.improvementSuggestions.length > 0">
-         <div class="action-title">
-            治愈小行动
-         </div>
-       <div class="actions-list">
-        <div v-for="action in currentEmotion.improvementSuggestions" :key="action" class="action-item">
-            <div class="action-icon">✨</div>
-            <div class="action-text">{{ action }}</div>
-        </div>
-       </div>
-        </div>
-      <!-- 风险提示 -->
-      <div class="risk-notice" v-if="currentEmotion.isNegative && currentEmotion.riskLevel > 1">
-        <div class="notice-icon">🤗</div>
-        <div class="notice-content">
-            <div class="notice-title">温习提示</div>
-            <div class="notice-text">{{ currentEmotion.riskDescription }}</div>
-        </div>
-      </div>
-        </div>
-     </div> 
-       <!-- 会话列表 -->
-    <div class="session-history">
-        <h4 class="secion-title">会话列表</h4>
-     <div class="session-list">
-      <div v-for="session in sessionList" :key="session.id" @click="handleSessionClick(session)" class="session-item">
-        <div class="session-info">
-             <div class="session-title">  
-              <span> {{ session.sessionTitle }}</span>
-               <div class="session-meta">
-                <span class="session-time">{{ session.startedAt }}</span>
-               </div>
-               <div class="session-preview">
-                  {{session.lastMessageContent}}
-               </div>
-               <div class="session-stats">
-                <span>
-                    <el-icon><ChatRound/></el-icon>
-                    {{ session.messageCount||0 }}
-                </span>
-                <span>
-                    <el-icon><Clock/></el-icon>
-                    {{ session.durationMinutes||0 }}分钟
-                </span>
-                 </div>
-             </div>
-             <div class="session-actions">
-                <el-button text type="danger"  @click="handleDeleteSession(session.id)">
-                    <el-icon><DeleteFilled/></el-icon>
-                </el-button>
-             </div>
-        </div>
-      </div>
-     </div>
 
-    </div>
-     </div>
-     <div class="chat-main">
-      <div class="chat-header">
-       <div class="header-left">  
-       <div class="chat-avatar">
-        <el-image :src="iconUrl2" style="width: 30px; height: 30px;" />
-       </div> 
-       <div class="chat-info">
-        <h2>AI助手</h2>
-        <p>您的贴心AI心理健康助手</p>
-       </div>
-    </div>
-    <el-button circle @click="createNewFrontendSession" title="新建会话">
-        <el-icon> <Plus/></el-icon>
-    </el-button>
+          <!-- 温习建议卡片 -->
+          <div class="warm-suggestion">
+            <div class="suggestion-icon">💝</div>
+            <div class="suggestion-content">
+              <div class="suggestion-title">给你的小建议</div>
+              <div class="suggestion-text">{{ currentEmotion.suggestion }}</div>
+            </div>
+          </div>
+
+          <!-- 治愈行动 -->
+          <div class="healing-actions" v-if="currentEmotion.improvementSuggestions.length > 0">
+            <div class="action-title">治愈小行动</div>
+            <div class="actions-list">
+              <div
+                v-for="action in currentEmotion.improvementSuggestions"
+                :key="action"
+                class="action-item"
+              >
+                <div class="action-icon">✨</div>
+                <div class="action-text">{{ action }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 风险提示 -->
+          <div class="risk-notice" v-if="currentEmotion.isNegative && currentEmotion.riskLevel > 1">
+            <div class="notice-icon">🤗</div>
+            <div class="notice-content">
+              <div class="notice-title">温习提示</div>
+              <div class="notice-text">{{ currentEmotion.riskDescription }}</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="chat-messages" ref="chatMessagesRef">
-         <div class="message-item ai-message" v-if="messages.length===0">
+
+      <!-- 会话列表 -->
+      <div class="session-history">
+        <h4 class="section-title">会话列表</h4>
+
+        <div class="session-list">
+          <div
+            v-for="session in sessionList"
+            :key="session.id"
+            class="session-item"
+            @click="handleSessionClick(session)"
+          >
+            <div class="session-info">
+              <div class="session-title">
+                <span>{{ session.sessionTitle }}</span>
+
+                <div class="session-meta">
+                  <span class="session-time">{{ session.startedAt }}</span>
+                </div>
+
+                <div class="session-preview">
+                  {{ session.lastMessageContent }}
+                </div>
+
+                <div class="session-stats">
+                  <span>
+                    <el-icon><ChatRound /></el-icon>
+                    {{ session.messageCount || 0 }}
+                  </span>
+                  <span>
+                    <el-icon><Clock /></el-icon>
+                    {{ session.durationMinutes || 0 }}分钟
+                  </span>
+                </div>
+              </div>
+
+              <div class="session-actions">
+                <el-button text type="danger" @click="handleDeleteSession(session.id)">
+                  <el-icon><DeleteFilled /></el-icon>
+                </el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="header-left">
+          <div class="chat-avatar">
+            <el-image :src="iconUrl2" style="width: 30px; height: 30px;" />
+          </div>
+
+          <div class="chat-info">
+            <h2>AI助手</h2>
+            <p>您的贴心AI心理健康助手</p>
+          </div>
+        </div>
+
+        <el-button circle title="新建会话" @click="createNewFrontendSession">
+          <el-icon><Plus /></el-icon>
+        </el-button>
+      </div>
+
+      <!-- 消息列表 -->
+      <DynamicScroller
+        ref="chatScrollerRef"
+        class="chat-messages"
+        :items="messages"
+        :min-item-size="96"
+        key-field="id"
+      >
+        <template #before>
+          <div class="message-item ai-message" v-if="messages.length === 0">
             <div class="message-avatar">
-                <el-image :src="iconUrl1" style="width: 20px;height: 20px;" /> 
-                 </div>
-                 <div class="message-content">
-                    <div class="messs-bubble">
-                        <p>您好,我是您的AI心理健康助手。有什么我可以帮您的吗?</p>
-                    </div>
-                    <div class="message-time">刚刚</div>
-                 </div>
-         </div>
-         <!-- 消息列表-->
-           <div v-for="msg in messages" :key="msg.id" class="message-item" :class="msg.senderType===1 ? 'uer-message':'ai-message'">
-            <div class="message-avatar">
-              <el-image v-if="msg.senderType===1" style="width: 18px; height: 18px;" :src="iconUrl3"> </el-image>
-              <el-image v-if="msg.senderType===2" style="width: 18px; height: 18px;" :src="iconUrl1"> </el-image>
+              <el-image :src="iconUrl1" style="width: 20px; height: 20px;" />
             </div>
             <div class="message-content">
-                <div class="message-bubble">
-                    <div v-if="msg.senderType === 2 && isAiTyping && !msg.content" class="typing-indicator">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                    </div>
-                    <!--AI错误提示-->
-                    <div v-else-if="msg.isError" class="error-message">
-                        <p>{{ msg.content }}</p>
-                    </div>
-                    <!--AI正常返回-->
-                   <MarkdownRenderer v-else-if="msg.senderType === 2 && !msg.isError" :content="msg.content" :is-ai-message="true" />
-                           <p v-else-if="msg.content" v-html="formatMessageContent(msg.content)"></p>         
-                </div>
-                <div class="message-time">{{ msg.senderType === 2 && isAiTyping ? '正在输入中...' : msg.createdAt }}</div>
+              <div class="message-bubble">
+                <p>您好,我是您的AI心理健康助手。有什么我可以帮您的吗?</p>
+              </div>
+              <div class="message-time">刚刚</div>
             </div>
-           </div>
-      </div>
+          </div>
+        </template>
+
+        <template #default="{ item: msg, index, active }">
+          <DynamicScrollerItem
+            :item="msg"
+            :active="active"
+            :size-dependencies="[msg.content]"
+            :data-index="index"
+          >
+            <div
+              class="message-item"
+              :class="msg.senderType === 1 ? 'user-message' : 'ai-message'"
+            >
+              <div class="message-avatar">
+                <el-image
+                  v-if="msg.senderType === 1"
+                  :src="iconUrl3"
+                  style="width: 18px; height: 18px;"
+                />
+                <el-image
+                  v-if="msg.senderType === 2"
+                  :src="iconUrl1"
+                  style="width: 18px; height: 18px;"
+                />
+              </div>
+
+              <div class="message-content">
+                <div class="message-bubble">
+                  <div
+                    v-if="msg.senderType === 2 && isAiTyping && !msg.content"
+                    class="typing-indicator"
+                  >
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                  </div>
+
+                  <div v-else-if="msg.isError" class="error-message">
+                    <p>{{ msg.content }}</p>
+                  </div>
+
+                  <MarkdownRenderer
+                    v-else-if="msg.senderType === 2 && !msg.isError"
+                    :content="msg.content"
+                    :is-ai-message="true"
+                  />
+
+                  <p v-else-if="msg.content" v-html="formatMessageContent(msg.content)"></p>
+                </div>
+
+                <div class="message-time">
+                  {{ msg.senderType === 2 && isAiTyping ? '正在输入中...' : msg.createdAt }}
+                </div>
+              </div>
+            </div>
+          </DynamicScrollerItem>
+        </template>
+      </DynamicScroller>
+
       <!-- 聊天输入区 -->
-       <div class="chat-input">
-      <div class="input-container">
-       <el-input  
-       v-model="userMessage"
-         placeholder="请输入消息内容..."
+      <div class="chat-input">
+        <div class="input-container">
+          <el-input
+            v-model="userMessage"
+            placeholder="请输入消息内容..."
             clearable
             type="textarea"
             :rows="3"
             :disabled="isAiTyping"
-            @keydown="handleKeydown"
             class="message-input"
-       >
-        
-       </el-input>
-       <div class="input-footer">
-       <span>按Enter发送,Shift+Enter换行</span>
-       <span>{{ userMessage.length }}/500</span>
-       </div>
+            @keydown="handleKeydown"
+          />
+
+          <div class="input-footer">
+            <span>按Enter发送,Shift+Enter换行</span>
+            <span>{{ userMessage.length }}/500</span>
+          </div>
+        </div>
+
+        <el-button
+          type="primary"
+          class="send-btn"
+          :disabled="!userMessage.trim() || userMessage.length > 500"
+          @click="sendMessage"
+        >
+          <el-icon><Promotion /></el-icon>
+        </el-button>
       </div>
-      <el-button :disabled="!userMessage.trim()||userMessage.length >500" type="primary" class="send-btn" @click="sendMessage">
-        <el-icon><Promotion/></el-icon>
-    </el-button>
-       </div>
-     </div>
     </div>
+  </div>
 </template>
 <script setup>
-
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 
 import { startSession ,getSessionList,deleteSession,getSessionDetail,getSessionEmotion} from '../api/frontend';
 import  MarkdownRenderer  from '../components/MarkdownRenderer.vue'
@@ -446,18 +524,12 @@ const handleDeleteSession=(sessionId)=>{
 const formatMessageContent=(content)=>{
     return content.replace(/\n/g,'<br>')
 }
-const chatMessagesRef = ref(null)
+const chatScrollerRef = ref(null)
 
 const scrollToBottom = async () => {
   await nextTick()
   requestAnimationFrame(() => {
-    const el = chatMessagesRef.value
-  
-    if (!el) return
-    el.scrollTo({
-      top: el.scrollHeight,
-      behavior: 'smooth'
-    })
+    chatScrollerRef.value?.scrollToBottom()
   })
 }
 watch(
@@ -898,19 +970,15 @@ onMounted(()=>{
         }
         .chat-messages {
             flex: 1;
+            min-height: 0;
+            height: 100%;
             overflow-y: auto;
             padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 252, 248, 0.05) 100%);
-            min-height: 0;
             scrollbar-width: thin;
             scrollbar-color: rgba(251, 146, 60, 0.3) transparent;
             .message-item {
-                display: flex;
-                align-items: flex-start;
-                gap: 12px;
+               margin-bottom: 16px;
                 .message-avatar {
                     width: 32px;
                     height: 32px;

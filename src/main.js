@@ -1,3 +1,5 @@
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
