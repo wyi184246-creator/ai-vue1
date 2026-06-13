@@ -91,6 +91,24 @@ const router = createRouter({
   history: createWebHistory(),
   routes:[...frontendRoutes,...backendRoutes]
 })
+
+router.onError((error) => {
+  const message = error?.message || ''
+  const isChunkLoadFailed =
+    message.includes('Failed to fetch dynamically imported module') ||
+    message.includes('Unable to preload CSS') ||
+    message.includes('Loading chunk') ||
+    message.includes('Importing a module script failed')
+
+  if (isChunkLoadFailed && !sessionStorage.getItem('chunk-reload')) {
+    sessionStorage.setItem('chunk-reload', '1')
+    window.location.reload()
+  }
+})
+
+router.afterEach(() => {
+  sessionStorage.removeItem('chunk-reload')
+})
   
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
