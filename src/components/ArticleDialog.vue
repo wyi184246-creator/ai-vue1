@@ -74,6 +74,7 @@ import { ref,reactive,computed,nextTick,watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { uploadFile, createArticle, updateArticle } from '@/api/admin';
 import { fileBaseUrl } from '@/config';
+import { normalizeAssetUrl } from '@/utils/assetUrl';
 import RichTextEditor from './RichTextEditor.vue';
 const props = defineProps({
   modelValue: {
@@ -115,7 +116,7 @@ watch(() => props.article, (newArticle) => {
    nextTick(() => {
        Object.assign(formData,newArticle); 
      businessId.value = newArticle.id;
-     imageUrl.value = fileBaseUrl + newArticle.coverImage;
+     imageUrl.value = normalizeAssetUrl(fileBaseUrl + newArticle.coverImage);
    })
     
 }});
@@ -167,7 +168,7 @@ const handleUploadRequest = async ({ file }) => {
  businessId.value=crypto.randomUUID();
   const fileRes = await uploadFile(file, 
   { businessId:businessId.value });
-  imageUrl.value = fileBaseUrl + fileRes.filePath;
+  imageUrl.value = normalizeAssetUrl(fileBaseUrl + fileRes.filePath);
   formData.coverImage = fileRes.filePath;
 }
 const imageUrl = ref('');
