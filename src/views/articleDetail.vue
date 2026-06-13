@@ -54,31 +54,11 @@ import iconUrl from '@/assets/images/book.png'
 import { getKnowledgeDetail } from '../api/frontend';
 import { dayjs } from 'element-plus';
 import { useRouter } from 'vue-router';
+import { normalizeHtmlImageUrls } from '../utils/assetUrl';
 
 const router = useRouter()
 const goBackToKnowledge = () => {
     router.push('/knowledge')
-}
-
-const apiOrigin = 'http://159.75.169.224:1235'
-
-const normalizeArticleImageUrl = (src) => {
-  if (!src) return ''
-  if (/^(data:|blob:|https:\/\/)/i.test(src)) return src
-
-  if (src.startsWith(apiOrigin)) {
-    return src.slice(apiOrigin.length)
-  }
-
-  if (src.startsWith('//')) {
-    return `https:${src}`
-  }
-
-  if (src.startsWith('/')) {
-    return src
-  }
-
-  return `/${src}`
 }
 
 const formatContent = (content) => {
@@ -89,16 +69,8 @@ const formatContent = (content) => {
       .replace(/\n/g, '<br>')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
-
-  const wrapper = document.createElement('div')
-  wrapper.innerHTML = formatted
-  wrapper.querySelectorAll('img').forEach((img) => {
-    img.src = normalizeArticleImageUrl(img.getAttribute('src'))
-    img.loading = 'lazy'
-    img.decoding = 'async'
-  })
   
-  return wrapper.innerHTML
+  return normalizeHtmlImageUrls(formatted)
 }
 const props=defineProps({
     id:String

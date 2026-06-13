@@ -71,6 +71,7 @@ import iconUrl from '@/assets/images/book.png'
 import { getKnowledgeList } from '../api/frontend'
 import {ref,reactive,onMounted} from 'vue'
 import { useRouter } from 'vue-router' 
+import { getImageUrl } from '../utils/assetUrl'
 
 const recommendList=ref([])
 
@@ -93,9 +94,7 @@ const getPageList=()=>{
          pagination.total=res.total
     })
 }
-const getImage=(url)=>{
-   return url? "http://159.75.169.224:1235" + url : 'https://file.itndedu.com/psychology_ai.png'
-}
+const getImage=(url)=> getImageUrl(url)
 
 const handleChange = (page) => {
   pagination.currentPage = page;
