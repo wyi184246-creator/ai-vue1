@@ -3,3 +3,21 @@ from = "/api/*"
 to = "http://159.75.169.224:1235/api/:splat"
 status = 200
 force = true
+
+[[redirects]]
+from = "/profile/*"
+to = "http://159.75.169.224:1235/profile/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/upload/*"
+to = "http://159.75.169.224:1235/upload/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/uploads/*"
+to = "http://159.75.169.224:1235/uploads/:splat"
+status = 200
+force = true
