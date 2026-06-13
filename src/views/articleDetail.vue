@@ -2,6 +2,10 @@
 <div class="articleDetail-container">
     <div class="header-section">
         <div class="header-content">
+        <el-button class="back-btn" plain @click="goBackToKnowledge">
+            <el-icon><ArrowLeft /></el-icon>
+            返回知识库
+        </el-button>
         <el-image :src="iconUrl" style="width: 60px; height: 60px;"> </el-image>
         <h1>知识文章详情</h1>
         </div>
@@ -49,6 +53,12 @@ import {ref,onMounted} from 'vue'
 import iconUrl from '@/assets/images/book.png'
 import { getKnowledgeDetail } from '../api/frontend';
 import { dayjs } from 'element-plus';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+const goBackToKnowledge = () => {
+    router.push('/knowledge')
+}
 
 const formatContent = (content) => {
   if (!content) return ''
@@ -76,6 +86,7 @@ onMounted(()=>{
 <style scoped lang="scss">
 .articleDetail-container {
     background: linear-gradient(135deg, #fafbfc 0%, #f7f9fc 50%, #f2f6fa 100%);
+    flex: 1;
     .flex-box {
         display: flex;
         align-items: center;
@@ -94,6 +105,19 @@ onMounted(()=>{
             display: flex;
             align-items: center;
             gap: 12px;
+            max-width: 1200px;
+            margin: 0 auto;
+            .back-btn {
+                margin-right: 12px;
+                color: #7c3aed;
+                border: none;
+                background: rgba(255, 255, 255, 0.92);
+                font-weight: 600;
+                &:hover {
+                    color: #f59e0b;
+                    background: #fff;
+                }
+            }
         }
     }
     .content {

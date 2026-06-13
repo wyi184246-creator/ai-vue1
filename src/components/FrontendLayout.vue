@@ -19,8 +19,9 @@
         </template>
      </div>
     </div>
-    <router-view/>
-    <div class="main-content"></div>
+    <main class="frontend-main">
+        <router-view/>
+    </main>
     <div class="footer-container">
         <div class="footer-bottom">
             <p>&copy; 2026 心理健康AI助手. 保留所有权利</p>
@@ -52,17 +53,21 @@ const handleLogout = () => {
 <style lang="scss" scoped>
 .frontend-layout {
         background-color: #fff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
         .navbar-container {
-            max-width: 1200px;
-            height: 100%;
-            margin: 0 auto;
-            padding: 10px;
+            width: 100%;
+            min-height: 70px;
+            box-sizing: border-box;
+            padding: 10px 48px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             .brand-section {
                 display: flex;
                 align-items: center;
+                flex-shrink: 0;
                 .brand-name {
                     margin-left: 10px;
                     font-size: 24px;
@@ -74,6 +79,7 @@ const handleLogout = () => {
                 display: flex;
                 align-items: center;
                 gap: 40px;
+                margin-left: auto;
                 .nav-link {
                     color: #4b5563;
                     font-size: 16px;
@@ -83,6 +89,11 @@ const handleLogout = () => {
                     }
                 }
             }
+        }
+        .frontend-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .footer-container {

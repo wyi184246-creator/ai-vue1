@@ -122,6 +122,7 @@ onMounted(()=>{
 <style scoped lang="scss">
 .knowledge-container {
     background: linear-gradient(135deg, #fafbfc 0%, #f7f9fc 50%, #f2f6fa 100%);
+    flex: 1;
     .flex-box {
         display: flex;
         align-items: center;
