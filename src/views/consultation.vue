@@ -293,6 +293,49 @@ const iconUrl2 = new URL('../assets/images/like.png', import.meta.url).href;
 
 const iconUrl3=new URL('../assets/images/users.png', import.meta.url).href;
 const isAiTyping = ref(false);
+let streamTextQueue = ''
+let streamTypingTimer = null
+let streamDonePending = false
+
+const resetStreamTyping = () => {
+    streamTextQueue = ''
+    streamDonePending = false
+    if (streamTypingTimer) {
+        clearInterval(streamTypingTimer)
+        streamTypingTimer = null
+    }
+}
+
+const finishStreamTyping = () => {
+    isAiTyping.value = false
+    streamDonePending = false
+    loadSessionEmotion(currentSession.value.sessionId)
+}
+
+const startStreamTyping = (aiMessage) => {
+    if (streamTypingTimer) return
+
+    streamTypingTimer = setInterval(() => {
+        if (streamTextQueue) {
+            const nextText = streamTextQueue.slice(0, 2)
+            streamTextQueue = streamTextQueue.slice(2)
+            aiMessage.content += nextText
+            return
+        }
+
+        clearInterval(streamTypingTimer)
+        streamTypingTimer = null
+
+        if (streamDonePending) {
+            finishStreamTyping()
+        }
+    }, 35)
+}
+
+const enqueueStreamText = (aiMessage, text) => {
+    streamTextQueue += text
+    startStreamTyping(aiMessage)
+}
 const loadSessionEmotion=(sessionId)=>{
     const id=sessionId.toString().startsWith('session_') ? sessionId : `session_${sessionId}`
     getSessionEmotion(id).then(res=>{
@@ -421,6 +464,7 @@ const startAIResponse=(sessionId,userMessage)=>{
          ElMessage.error('AI助手正在输入中,请稍后')
          return
        }
+       resetStreamTyping()
        isAiTyping.value=true
     const aiMessage={
         id:`ai_${Date.now()}_${Math.random().toString(36).substr(2,9)}`,
@@ -445,7 +489,8 @@ const startAIResponse=(sessionId,userMessage)=>{
         }),
         signal: ctrl.signal,
         onopen:(response)=>{
-            if(response.headers.get('Content-Type') !== 'text/event-stream'){
+            const contentType = response.headers.get('Content-Type') || ''
+            if(!contentType.includes('text/event-stream')){
                 ElMessage.error('服务器返回非流式数据')
             }
         },
@@ -457,15 +502,17 @@ const startAIResponse=(sessionId,userMessage)=>{
 
 
             if(eventName === 'done'){
-                isAiTyping.value=false
+                streamDonePending = true
+                if (!streamTextQueue && !streamTypingTimer) {
+                    finishStreamTyping()
+                }
                 ctrl.abort()
-                loadSessionEmotion(currentSession.value.sessionId)
                 return
             }
             const payload=JSON.parse(raw)
             const ok= String(payload.code) === '200'
         if(ok && payload.data && payload.data.content){
-            aiMessage.content += payload.data.content
+            enqueueStreamText(aiMessage, payload.data.content)
         }else if (!ok){
            handleError(payload.message||'AI回复失败')
         }
@@ -483,6 +530,7 @@ const startAIResponse=(sessionId,userMessage)=>{
 
 //错误处理函数
  const handleError=(error)=>{
+      resetStreamTyping()
       const aiMessage=messages.value[messages.value.length-1]
       if(aiMessage ){
         aiMessage.content='AI回复失败,请重试'
