@@ -159,7 +159,7 @@
         <template #before>
           <div class="message-item ai-message" v-if="messages.length === 0">
             <div class="message-avatar">
-              <el-image :src="iconUrl1" style="width: 20px; height: 20px;" />
+              <img class="avatar-img avatar-img--sm" :src="iconUrl1" alt="AI助手" />
             </div>
             <div class="message-content">
               <div class="message-bubble">
@@ -182,15 +182,17 @@
               :class="msg.senderType === 1 ? 'user-message' : 'ai-message'"
             >
               <div class="message-avatar">
-                <el-image
+                <img
                   v-if="msg.senderType === 1"
+                  class="avatar-img"
                   :src="iconUrl3"
-                  style="width: 18px; height: 18px;"
+                  alt="用户"
                 />
-                <el-image
+                <img
                   v-if="msg.senderType === 2"
+                  class="avatar-img"
                   :src="iconUrl1"
-                  style="width: 18px; height: 18px;"
+                  alt="AI助手"
                 />
               </div>
 
@@ -292,6 +294,13 @@ const iconUrl1 = new URL('../assets/images/robot-fill.png', import.meta.url).hre
 const iconUrl2 = new URL('../assets/images/like.png', import.meta.url).href;
 
 const iconUrl3=new URL('../assets/images/users.png', import.meta.url).href;
+const preloadAvatars = () => {
+    ;[iconUrl1, iconUrl2, iconUrl3].forEach((url) => {
+        const img = new Image()
+        img.decoding = 'async'
+        img.src = url
+    })
+}
 const isAiTyping = ref(false);
 let streamTextQueue = ''
 let streamTypingTimer = null
@@ -593,6 +602,7 @@ watch(
 )
 onMounted(()=>{
 
+    preloadAvatars();
     getSessionPage();
     createNewFrontendSession();
 })
@@ -1038,6 +1048,18 @@ onMounted(()=>{
                     font-size: 14px;
                     color: white;
                     flex-shrink: 0;
+                    overflow: hidden;
+                    .avatar-img {
+                        width: 18px;
+                        height: 18px;
+                        display: block;
+                        object-fit: contain;
+                        flex-shrink: 0;
+                        &.avatar-img--sm {
+                            width: 20px;
+                            height: 20px;
+                        }
+                    }
                 }
                 &.ai-message {
                     .message-avatar {
